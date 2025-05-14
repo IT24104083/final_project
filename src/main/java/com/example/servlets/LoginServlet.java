@@ -1,5 +1,6 @@
-package com.example.demo1;
+package com.example.servlets;
 
+import com.example.models.User;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -27,12 +28,12 @@ public class LoginServlet extends HttpServlet {
 
             // Invalid credentials
             request.setAttribute("error", "Invalid email or password");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher("emplogin.jsp").forward(request, response);
 
         } catch (IOException e) {
             e.printStackTrace();
             request.setAttribute("error", "Login failed. Please try again.");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher("emplogin.jsp").forward(request, response);
         }
     }
 }

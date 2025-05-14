@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.Objects" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%-- Ensure jakarta.servlet.jsp.jstl-api-2.0.0.jar and jakarta.servlet.jsp.jstl-2.0.0.jar are in WEB-INF/lib or included via Maven --%>
 <html>
 <head>
     <title>My Account - Salon Booking System</title>
@@ -50,7 +52,12 @@
             margin-bottom: 0.5rem;
         }
 
-        .logout-btn {
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .logout-btn, .home-btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -62,7 +69,7 @@
             transition: background-color 0.3s;
         }
 
-        .logout-btn:hover {
+        .logout-btn:hover, .home-btn:hover {
             background-color: var(--secondary-color);
         }
 
@@ -191,7 +198,62 @@
             background-color: #c0392b;
         }
 
-        /* Modal styles */
+        .submit-feedback {
+            background-color: #f1c40f;
+            color: white;
+        }
+
+        .submit-feedback:hover {
+            background-color: #d4ac0d;
+        }
+
+        .feedback-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .feedback-table th, .feedback-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        .feedback-table th {
+            background-color: var(--light-gray);
+            color: var(--primary-color);
+        }
+
+        .feedback-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .edit-feedback {
+            background-color: #3498db;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+        }
+
+        .edit-feedback:hover {
+            background-color: #2980b9;
+        }
+
+        .delete-feedback {
+            background-color: var(--danger-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-feedback:hover {
+            background-color: #c0392b;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -243,7 +305,7 @@
             font-weight: 500;
         }
 
-        .form-group input {
+        .form-group input, .form-group textarea {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid #ddd;
@@ -297,7 +359,10 @@
             <h1>Welcome, ${user.name}!</h1>
             <p>Manage your salon booking account</p>
         </div>
-        <a href="LogoutServlet" class="logout-btn">Logout</a>
+        <div class="header-actions">
+            <a href="landingPage.jsp" class="home-btn">Back to Home</a>
+            <a href="LogoutServlet" class="logout-btn">Logout</a>
+        </div>
     </header>
 
     <div class="account-section">
@@ -313,6 +378,10 @@
             </div>
 
             <div class="account-details">
+                <div class="detail-item">
+                    <span class="detail-label">Customer ID</span>
+                    <span class="detail-value">${user.customerId}</span>
+                </div>
                 <div class="detail-item">
                     <span class="detail-label">Email Address</span>
                     <span class="detail-value">${user.email}</span>
@@ -339,6 +408,44 @@
                 Delete My Account
             </button>
 
+            <h3 class="section-title">My Feedback</h3>
+            <button class="action-btn submit-feedback" onclick="openModal('feedbackModal')">
+                Submit New Feedback
+            </button>
+
+            <c:choose>
+                <c:when test="${empty userFeedbacks}">
+                    <p class="no-feedback-message">No feedback submitted yet.</p>
+                </c:when>
+                <c:otherwise>
+                    <table class="feedback-table">
+                        <thead>
+                        <tr>
+                            <th>Feedback ID</th>
+                            <th>Feedback</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach var="feedback" items="${userFeedbacks}">
+                            <tr>
+                                <td>${feedback.feedbackId}</td>
+                                <td>${feedback.feedback}</td>
+                                <td class="feedback-actions">
+                                    <a href="#" class="edit-feedback" onclick="openEditFeedbackModal(${feedback.feedbackId}, '${feedback.feedback.replace("'", "\\'")}')">Edit</a>
+                                    <form action="FeedbackServlet" method="post" style="display:inline;">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="feedbackId" value="${feedback.feedbackId}">
+                                        <button type="submit" class="delete-feedback">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </c:otherwise>
+            </c:choose>
+
             <% if (request.getAttribute("success") != null) { %>
             <div class="success-message">
                 <%= request.getAttribute("success") %>
@@ -357,7 +464,7 @@
 <!-- Update Email Modal -->
 <div id="emailModal" class="modal">
     <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('emailModal')">&times;</span>
+        <span class="close-btn" onclick="closeModal('emailModal')">×</span>
         <h3 class="modal-title">Update Email Address</h3>
         <form action="UpdateEmailServlet" method="post">
             <div class="form-group">
@@ -376,7 +483,7 @@
 <!-- Update Password Modal -->
 <div id="passwordModal" class="modal">
     <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('passwordModal')">&times;</span>
+        <span class="close-btn" onclick="closeModal('passwordModal')">×</span>
         <h3 class="modal-title">Change Password</h3>
         <form action="UpdatePasswordServlet" method="post" onsubmit="return validatePasswordChange()">
             <div class="form-group">
@@ -400,7 +507,7 @@
 <!-- Delete Account Modal -->
 <div id="deleteModal" class="modal">
     <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('deleteModal')">&times;</span>
+        <span class="close-btn" onclick="closeModal('deleteModal')">×</span>
         <h3 class="modal-title">Delete Account</h3>
         <p>Are you sure you want to delete your account? This action cannot be undone. All your data will be permanently removed.</p>
         <form action="DeleteAccountServlet" method="post">
@@ -415,8 +522,44 @@
     </div>
 </div>
 
+<!-- Submit Feedback Modal -->
+<div id="feedbackModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('feedbackModal')">×</span>
+        <h3 class="modal-title">Submit Feedback</h3>
+        <form action="FeedbackServlet" method="post">
+            <input type="hidden" name="action" value="create">
+            <input type="hidden" name="userId" value="${user.customerId}">
+            <input type="hidden" name="userName" value="${user.name}">
+            <div class="form-group">
+                <label for="feedbackText">Your Feedback</label>
+                <textarea id="feedbackText" name="feedback" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="submit-btn">Submit Feedback</button>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Feedback Modal -->
+<div id="editFeedbackModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('editFeedbackModal')">×</span>
+        <h3 class="modal-title">Edit Feedback</h3>
+        <form action="FeedbackServlet" method="post">
+            <input type="hidden" name="action" value="update">
+            <input type="hidden" id="editFeedbackId" name="feedbackId">
+            <input type="hidden" name="userId" value="${user.customerId}">
+            <input type="hidden" name="userName" value="${user.name}">
+            <div class="form-group">
+                <label for="editFeedbackText">Your Feedback</label>
+                <textarea id="editFeedbackText" name="feedback" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="submit-btn">Update Feedback</button>
+        </form>
+    </div>
+</div>
+
 <script>
-    // Modal functions
     function openModal(modalId) {
         document.getElementById(modalId).style.display = 'block';
     }
@@ -426,7 +569,12 @@
         document.getElementById('passwordError').textContent = '';
     }
 
-    // Close modal when clicking outside
+    function openEditFeedbackModal(feedbackId, feedbackText) {
+        document.getElementById('editFeedbackId').value = feedbackId;
+        document.getElementById('editFeedbackText').value = feedbackText;
+        openModal('editFeedbackModal');
+    }
+
     window.onclick = function(event) {
         if (event.target.className === 'modal') {
             document.querySelectorAll('.modal').forEach(modal => {
@@ -435,7 +583,6 @@
         }
     }
 
-    // Password validation
     function validatePasswordChange() {
         const newPassword = document.getElementById('newPassword').value;
         const confirmPassword = document.getElementById('confirmPassword').value;

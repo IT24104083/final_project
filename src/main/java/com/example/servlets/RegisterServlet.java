@@ -1,12 +1,13 @@
-package com.example.demo1;
+package com.example.servlets;
 
+import com.example.models.User;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "reg",value = "/RegisterServlet")
+@WebServlet(name = "reg", value = "/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -18,7 +19,7 @@ public class RegisterServlet extends HttpServlet {
         try {
             // Check if user already exists
             List<User> users = FileHandler.readUsers();
-            User newUser = new User(name, email, password);
+            User newUser = new User(0, name, email, password); // customerId = 0 for auto-generation
 
             if (users.contains(newUser)) {
                 request.setAttribute("error", "Email already registered!");

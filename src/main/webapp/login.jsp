@@ -3,7 +3,6 @@
 <head>
     <title>Salon Booking - Login</title>
     <style>
-        /* Similar styling as register page */
         body {
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;

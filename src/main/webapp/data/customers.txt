@@ -1,1 +1,2 @@
-name:Thamindu Wijesinghe,email:thaminduwijesinghe@gmail.com,password:thamidu2003
+customerId:1,name:aaaa,email:123@gmail.com,password:thamidu2003
+customerId:2,name:Thamidu,email:thaminduwijesinghe@gmail.com,password:thamidu2003

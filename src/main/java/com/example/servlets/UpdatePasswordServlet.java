@@ -1,5 +1,6 @@
-package com.example.demo1;
+package com.example.servlets;
 
+import com.example.models.User;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -29,7 +30,7 @@ public class UpdatePasswordServlet extends HttpServlet {
 
             // Update password
             for (User user : users) {
-                if (user.equals(currentUser)) {
+                if (user.getCustomerId() == currentUser.getCustomerId()) { // Use customerId for identification
                     user.setPassword(newPassword);
                     currentUser.setPassword(newPassword);
                     break;

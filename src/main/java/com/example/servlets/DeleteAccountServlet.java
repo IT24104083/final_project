@@ -1,5 +1,6 @@
-package com.example.demo1;
+package com.example.servlets;
 
+import com.example.models.User;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -29,7 +30,7 @@ public class DeleteAccountServlet extends HttpServlet {
 
             FileHandler.updateUsers(users);
             session.invalidate(); // Logout user
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("emplogin.jsp");
 
         } catch (IOException e) {
             e.printStackTrace();

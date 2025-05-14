@@ -86,7 +86,11 @@
     <div class="form-group">
       <label for="confirmPassword">Confirm Password</label>
       <input type="password" id="confirmPassword" name="confirmPassword" required>
-      <div id="passwordError" class="error"></div>
+      <div id="passwordError" class="error">
+        <% if(request.getAttribute("error") != null) { %>
+        <%= request.getAttribute("error") %>
+        <% } %>
+      </div>
     </div>
     <button type="submit">Register</button>
   </form>
